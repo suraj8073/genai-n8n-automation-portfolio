@@ -1,0 +1,124 @@
+{
+  "name": "Proj #5: Daily News Aggregator",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4a29ffad-66a5-475f-9603-ba40a188eb4d",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "http://feeds.bbci.co.uk/news/rss.xml",
+        "options": {
+          "customFields": "https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en"
+        }
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ada59303-27c0-4c13-8c80-7f8a350ab9a3",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "sendTo": "sweetytippannavar1234@gmail.com",
+        "subject": "={{$json.subject}}",
+        "message": "={{$json.html}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "87c2133f-b5e1-455f-89f6-b3a3e4fe9593",
+      "name": "Send a message",
+      "webhookId": "9e914173-51d8-4ea6-839d-3786a3c0e159",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IBx3thDQ1aVMpV3i",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nlet html = `<h2>📰 Daily News Digest</h2>`;\nhtml += `<p>Here are today’s top headlines:</p>`;\nhtml += `<ul>`;\n\nfor (const item of items) {\n  const title = item.json.title || \"No title\";\n  const link = item.json.link || \"#\";\n  html += `<li><a href=\"${link}\" target=\"_blank\">${title}</a></li>`;\n}\n\nhtml += `</ul>`;\nhtml += `<p>⚡ Sent by Spidey x Flash</p>`;\n\nreturn [\n  {\n    json: {\n      subject: \"📰 Your Daily News Digest\",\n      html: html,\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "fe26a69b-65b8-45a1-88f1-da7cca96215f",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "1b6f86c0-e26a-4a9d-878f-ebdb2515c441",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ce707f56bf03113d593ab342a85ad8e9ba9a949fe4cc230d4b3fac7c6cc711bc"
+  },
+  "id": "eU9iKFImlox5vLvxgZDBH",
+  "tags": []
+}

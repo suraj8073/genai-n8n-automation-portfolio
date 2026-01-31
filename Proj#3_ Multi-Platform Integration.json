@@ -1,0 +1,199 @@
+{
+  "name": "Proj#3: Multi-Platform Integration",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "form-submission",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8a3be8b9-bc0a-4ebd-a1c5-5be324b80913",
+      "name": "Webhook",
+      "webhookId": "36c98b4b-2c3f-422c-b893-dde267d5c25c"
+    },
+    {
+      "parameters": {
+        "sendTo": "surajtippannavar123@gmail.com",
+        "subject": "=New Form Submission from {{ $json.body.name }}",
+        "emailType": "text",
+        "message": "=✅ New Form Submission!\n\nName: {{ $json.body.name }}\nEmail: {{ $json.body.email }}\nMessage: {{ $json.body.message }}\nSubmitted at: {{ $json.body.timestamp }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "ba060dbe-3de9-48dd-9ec9-f66de5245c43",
+      "name": "Send a message",
+      "webhookId": "9ae3fbec-9ff1-42ef-aeff-b71d3c0154dc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IBx3thDQ1aVMpV3i",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1J5bqqA-6qRZ57ewWtOzl3MKUPmgc-OsX_L6iGnfTx6E",
+          "mode": "list",
+          "cachedResultName": "Form to n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1J5bqqA-6qRZ57ewWtOzl3MKUPmgc-OsX_L6iGnfTx6E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 578841558,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1J5bqqA-6qRZ57ewWtOzl3MKUPmgc-OsX_L6iGnfTx6E/edit#gid=578841558"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{$json.body.timestamp}}",
+            "Name": "={{$json.body.name}}",
+            "Email": "={{$json.body.email}}",
+            "Message": "={{$json.body.message}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "50e0ee79-d614-4256-8c8c-805490cdea24",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AlWDPC2iY0j2hvYo",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "5916475928",
+        "text": "=📩 New Form Submission!\n\n👤 Name: {{ $json.body.name }}\n📧 Email: {{ $json.body.email }}\n💬 Message: {{ $json.body.message }}\n🕒 Submitted at: {{$json.body.timestamp}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "efe60bf0-70a4-49fb-a8c9-dc09be8d63f6",
+      "name": "Send a text message",
+      "webhookId": "5b62d4eb-0ca7-43ef-9b28-e9b331b2cb3a",
+      "credentials": {
+        "telegramApi": {
+          "id": "RBucQgzaeTxcPZ7C",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "55d1568d-a60d-4072-b520-ef4a6d7ca2d3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ce707f56bf03113d593ab342a85ad8e9ba9a949fe4cc230d4b3fac7c6cc711bc"
+  },
+  "id": "6xl3RD1Yl583I6GozRvYT",
+  "tags": []
+}
